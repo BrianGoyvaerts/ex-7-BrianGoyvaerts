@@ -1,80 +1,86 @@
 <!DOCTYPE html>
+
 <html>
     <head>
-        <title>Ex 7 - Data Distribution</title>
+        <title>TODO supply a title</title>
         <meta charset="UTF-8">
         <meta name="naam" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" type="text/css" href="brian.css">
         <link rel="shortcut icon" href="">
-        <script type ="text/javascript" src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
-        
+        <script type="text/javascript" src="https://code.jquery.com/jquery-3.1.1.min.js">
+        </script>
+
     </head>
     <body>
         <div>
             <h1>Opdracht 7</h1>
             <h5>Even geduld, de gegevens worden verzameld...<br>Bij fouten, log in op de API!</h5>
             <table id="tabel">
-                <tr>
+                <tr>              
                     <th>Naam drone</th>
-                    <th>Mac drone</th>
-                    <th>Locatie Drone</th>
-                    <th>ID file</th>
+                    <th>Mac_adres drone</th>
+                    <th>Locatie drone</th>
+                    <th>id file</th>
                     <th>Eerste record</th>
-                    <th>Laatste record</th>
+                    <th>Laatste Record</th>
                 </tr>
             </table>
         </div>
         <script>
+$.ajax({
+    "url": "https://web-ims.thomasmore.be/datadistribution/API/2.0/drones?format=json",
+    "method": 'GET',
+    "dataType": "json",
+    "headers": {
+        "authorization": "Basic aW1zOno1MTJtVDRKeVgwUExXZw=="}
+}).done(function (drones) {
+    drones.forEach(function (drones) {
+        $.ajax({
+            "url": "https://web-ims.thomasmore.be/datadistribution/API/2.0/drones/" + drones.id + "?format=json",
+            "method": "GET",
+            "datatype": "json",
+            "headers": {
+                "authorization": "Basic aW1zOno1MTJtVDRKeVgwUExXZw=="
+            }
+        }).done(function (dronespecs) {
             $.ajax({
-                "url":"https://web-ims.thomasmore.be/datadistribution/API/2.0/drones?format=json", 
-                "method":'GET', 
-                "dataType":"json", 
+                "url": "https://web-ims.thomasmore.be/datadistribution/API/2.0/files?drone_id.is=" + dronespecs.id + "&format=json",
+                "method": "GET",
+                "datatype": "json",
                 "headers": {
-                    "authorization":"Basic aW1zOno1MTJtVDRKeVgwUExXZw=="}
-            }).done(function(drones) {
-                drones.forEach(function(drones) {
+                    "authorization": "Basic aW1zOno1MTJtVDRKeVgwUExXZw=="
+                }
+            }).done(function (fileloc) {
+                fileloc.forEach(function (fileloc) {
                     $.ajax({
-                        "url":"https://web-ims.thomasmore.be/datadistribution/API/2.0/drones/" + drones.id + "?format=json", 
-                        "method":"GET", 
-                        "datatype":"json", 
+                        "url": "https://web-ims.thomasmore.be/datadistribution/API/2.0/files/" + fileloc.id + "?format=json",
+                        "method": "GET",
+                        "datatype": "json",
                         "headers": {
-                            "authorization":"Basic aW1zOno1MTJtVDRKeVgwUExXZw=="}
-                    }).done(function(dronespecs) {
-                        $.ajax({
-                            "url":"https://web-ims.thomasmore.be/datadistribution/API/2.0/files?drone_id.is=" + dronespecs.id + "?format=json", 
-                            "method":"GET", 
-                            "datatype":"json", 
-                            "headers": {
-                                "authorization":"Basic aW1zOno1MTJtVDRKeVgwUExXZw=="}
-                        }).done(function(fileloc) {
-                            fileloc.forEach(function(fileloc) {
-                                $.ajax({
-                                    "url":"https://web-ims.thomasmore.be/datadistribution/API/2.0/files/" + fileloc.id + "?format=json", 
-                                    "method":"GET", 
-                                    "datatype":"json", 
-                                    "headers": {
-                                        "authorization":"Basic aW1zOno1MTJtVDRKeVgwUExXZw=="}
-                                }).done(function(filedetails) {
-                                    $('#tabel').append('<tr>' +
-                                            '<td>' + dronespecs.name + '</td>' +
-                                            '<td>' + dronespecs.mac_adress + '</td>' +
-                                            '<td>' + dronespecs.location + '</td>' +
-                                            '<td>' + fileloc.id + '</td>' +
-                                            '<td>' + filedetails.date_first_record + '</td>' +
-                                            '<td>' + filedetails.date_last_record + '</td></tr>'); 
-                                }).fail(function(){
-                                }); 
-                            }); 
-                        }).fail(function () {
-                            alert('An error has occured - zoekt het zelf uit'); 
-                        });
+                            "authorization": "Basic aW1zOno1MTJtVDRKeVgwUExXZw=="
+                        }
+                    }).done(function (filedetails) {
+                        $('#tabel').append('<tr>' +
+                                '<td>' + dronespecs.name + '</td>' +
+                                '<td>' + dronespecs.mac_address + '</td>' +
+                                '<td>' + dronespecs.location + '</td>' +
+                                '<td>' + fileloc.id + '</td>' +
+                                '<td>' + filedetails.date_first_record + '</td>' +
+                                '<td>' + filedetails.date_last_record + '</td></tr>');
                     }).fail(function () {
-                         alert('An error has occured - zoekt het zelf uit'); 
-                    }); 
-                }); 
+                    });
+                });
             }).fail(function () {
-                alert('An error has occured - zoekt het zelf uit');
-            }); 
-      </script>      
+                alert('An error has occurred - you may not have been entered');
+            });
+        }).fail(function () {
+            alert('An error has occurred - you may not have been entered');
+        });
+    });
+}).fail(function () {
+    alert('An error has occurred - you may not have been entered');
+});
+        </script>
+
     </body>
 </html>
